@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Comentários GitHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="post-header">
+      <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=1200&h=400&fit=crop" alt="Banner do post" class="banner">
+      <h1 id="post-title">Carregando...</h1>
+      <p id="post-body"></p>
+
+      <div class="like-section">
+        <button id="like-btn" class="like-btn">
+          <span class="heart">♥</span>
+          <span id="like-count">0</span> Curtidas
+        </button>
+      </div>
+    </header>
+
+    <section class="comments-section">
+      <h2>Comentários <span id="comment-count">(0)</span></h2>
+
+      <form id="comment-form" class="comment-form">
+        <textarea id="comment-input" placeholder="Escreva um comentário... Precisa estar logado no GitHub" required></textarea>
+        <button type="submit">Comentar via GitHub</button>
+      </form>
+
+      <div id="comments-list" class="comments-list">
+        <p class="loading">Carregando comentários...</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
