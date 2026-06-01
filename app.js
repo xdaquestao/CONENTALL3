@@ -2,7 +2,6 @@ const API_URL = '/.netlify/functions/github';
 const RATE_LIMIT_MS = 60000;
 
 let currentLikes = 0;
-let userLiked = false;
 
 function checkRateLimit() {
   const lastComment = localStorage.getItem('lastCommentTime');
@@ -69,6 +68,9 @@ async function loadData() {
 }
 
 document.getElementById('like-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('like-btn');
+  btn.disabled = true;
+  
   try {
     await fetch(API_URL, {
       method: 'POST',
@@ -77,9 +79,10 @@ document.getElementById('like-btn').addEventListener('click', async () => {
     });
     currentLikes++;
     document.getElementById('like-count').textContent = currentLikes;
-    document.getElementById('like-btn').classList.add('liked');
+    btn.classList.add('liked');
   } catch (error) {
-    alert('Erro ao curtir. Verifique se o GITHUB_TOKEN está configurado no Netlify.');
+    alert('Erro ao curtir. Verifique o token no Netlify.');
+    btn.disabled = false;
   }
 });
 
@@ -95,6 +98,7 @@ document.getElementById('comment-form').addEventListener('submit', async (e) => 
   const nameInput = document.getElementById('comment-name');
   const emailInput = document.getElementById('comment-email');
   const bodyInput = document.getElementById('comment-input');
+  const btn = document.getElementById('comment-btn');
   
   const name = nameInput.value.trim();
   const email = emailInput.value.trim();
@@ -102,46 +106,36 @@ document.getElementById('comment-form').addEventListener('submit', async (e) => 
 
   if (!name || !body) return;
 
-  const commentsList = document.getElementById('comments-list');
-  const tempComment = document.createElement('div');
-  tempComment.className = 'comment';
-  tempComment.style.opacity = '0.6';
-  tempComment.innerHTML = `
-    <img src="https://github.com/identicons/${name}.png" alt="${name}">
-    <div class="comment-content">
-      <div class="comment-header">
-        <span class="comment-author">${name}</span>
-        <span class="comment-date">agora</span>
-      </div>
-      <div class="comment-body">${email ? `<strong>${email}</strong><br>` : ''}${body.replace(/\n/g, '<br>')}</div>
-    </div>
-  `;
-  
-  if (commentsList.querySelector('.loading')) {
-    commentsList.innerHTML = '';
-  }
-  commentsList.prepend(tempComment);
-
-  nameInput.value = '';
-  emailInput.value = '';
-  bodyInput.value = '';
-  localStorage.setItem('lastCommentTime', Date.now());
-  updateRateLimitUI();
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
 
   try {
-    await fetch(API_URL, {
+    const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'comment', name, email, body })
     });
+
+    if (!res.ok) throw new Error('Falha ao enviar');
+
+    // Só limpa e trava SE deu certo
+    nameInput.value = '';
+    emailInput.value = '';
+    bodyInput.value = '';
+    localStorage.setItem('lastCommentTime', Date.now());
+    updateRateLimitUI();
     
+    // Recarrega comentários depois de 1s
     setTimeout(() => {
       loadData();
-    }, 1500);
+    }, 1000);
     
   } catch (error) {
-    alert('Erro ao comentar. Recarregue a página.');
-    tempComment.remove();
+    alert('Erro ao comentar. Tente novamente.');
+    console.error(error);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Comentar';
   }
 });
 
