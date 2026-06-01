@@ -58,21 +58,24 @@ document.getElementById('like-btn').addEventListener('click', async () => {
 
 document.getElementById('comment-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const input = document.getElementById('comment-input');
-  const body = input.value.trim();
+  const nameInput = document.getElementById('comment-name');
+  const bodyInput = document.getElementById('comment-input');
+  const name = nameInput.value.trim();
+  const body = bodyInput.value.trim();
 
-  if (!body) return;
+  if (!name || !body) return;
 
   try {
     await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'comment', body })
+      body: JSON.stringify({ action: 'comment', name, body })
     });
-    input.value = '';
+    nameInput.value = '';
+    bodyInput.value = '';
     loadData();
   } catch (error) {
-    alert('Erro ao comentar. Verifique as variáveis de ambiente no Netlify.');
+    alert('Erro ao comentar. Tente novamente.');
   }
 });
 
