@@ -25,9 +25,10 @@
       <h2>Comentários <span id="comment-count">(0)</span></h2>
 
       <form id="comment-form" class="comment-form">
-        <textarea id="comment-input" placeholder="Escreva um comentário... Precisa estar logado no GitHub" required></textarea>
-        <button type="submit">Comentar via GitHub</button>
-      </form>
+  <input type="text" id="comment-name" placeholder="Seu nome" required>
+  <textarea id="comment-input" placeholder="Escreva um comentário..." required></textarea>
+  <button type="submit">Comentar</button>
+</form>
 
       <div id="comments-list" class="comments-list">
         <p class="loading">Carregando comentários...</p>
